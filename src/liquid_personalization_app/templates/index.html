@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>OpenFactory Liquid Personalization</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+        line-height: 1.6;
+      }
+
+      .card {
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      label {
+        display: block;
+        margin-top: 16px;
+        font-weight: bold;
+      }
+
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 6px;
+        font-size: 1rem;
+      }
+
+      button {
+        margin-top: 24px;
+        cursor: pointer;
+      }
+
+      .subtitle {
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>OpenFactory Liquid Personalization</h1>
+      <p class="subtitle">
+        Create a personalized liquid product order for the virtual factory.
+      </p>
+
+      <form method="post" action="/order">
+        <label for="color">Target color</label>
+        <input id="color" name="color" type="color" value="#7840c8" required>
+
+        <label for="volume_ml">Volume</label>
+        <select id="volume_ml" name="volume_ml" required>
+          <option value="100">100 ml</option>
+          <option value="250" selected>250 ml</option>
+          <option value="500">500 ml</option>
+        </select>
+
+        <label for="label_text">Label text</label>
+        <input
+          id="label_text"
+          name="label_text"
+          type="text"
+          value="Hadi Custom Mix"
+          required
+        >
+
+        <button type="submit">Create Virtual Work Order</button>
+      </form>
+    </div>
+  </body>
+</html>
