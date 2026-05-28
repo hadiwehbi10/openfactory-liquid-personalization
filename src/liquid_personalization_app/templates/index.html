@@ -4,75 +4,338 @@
     <meta charset="utf-8">
     <title>OpenFactory Liquid Personalization</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 0 20px;
-        line-height: 1.6;
+      :root {
+        --background: #f8fafc;
+        --card: #ffffff;
+        --text: #111827;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --soft-blue: #eff6ff;
+        --soft-green: #ecfdf5;
+        --shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
       }
 
-      .card {
-        border: 1px solid #ddd;
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 34%),
+          linear-gradient(135deg, #ffffff 0%, var(--background) 100%);
+        color: var(--text);
+      }
+
+      .page {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 40px 24px 56px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 48px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        font-size: 1.25rem;
+        color: var(--primary-dark);
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
         border-radius: 12px;
+        background: var(--primary);
+        color: #ffffff;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+      }
+
+      .status {
+        padding: 9px 14px;
+        border-radius: 999px;
+        background: var(--soft-green);
+        color: #047857;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 36px;
+        align-items: start;
+      }
+
+      .eyebrow {
+        color: var(--primary-dark);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.82rem;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 3.15rem;
+        line-height: 1.05;
+        letter-spacing: -0.045em;
+      }
+
+      .lead {
+        margin: 20px 0 0;
+        color: var(--muted);
+        font-size: 1.15rem;
+        line-height: 1.65;
+        max-width: 660px;
+      }
+
+      .concept-card {
+        margin-top: 30px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
         padding: 24px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        box-shadow: 0 12px 36px rgba(15, 23, 42, 0.06);
+      }
+
+      .concept-card h2 {
+        margin: 0 0 14px;
+        font-size: 1.25rem;
+      }
+
+      .workflow {
+        display: grid;
+        gap: 12px;
+      }
+
+      .workflow-step {
+        display: grid;
+        grid-template-columns: 38px 1fr;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .step-number {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: var(--soft-blue);
+        color: var(--primary-dark);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+
+      .step-title {
+        font-weight: 800;
+      }
+
+      .step-description {
+        color: var(--muted);
+        margin-top: 3px;
+        font-size: 0.95rem;
+      }
+
+      .order-card {
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--border);
+        border-radius: 26px;
+        padding: 30px;
+        box-shadow: var(--shadow);
+      }
+
+      .order-card h2 {
+        margin: 0 0 6px;
+        font-size: 1.65rem;
+      }
+
+      .order-card p {
+        margin: 0 0 22px;
+        color: var(--muted);
       }
 
       label {
         display: block;
-        margin-top: 16px;
-        font-weight: bold;
+        margin-top: 18px;
+        margin-bottom: 8px;
+        font-weight: 800;
       }
 
       input,
       select,
       button {
         width: 100%;
-        padding: 10px;
-        margin-top: 6px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        padding: 13px 14px;
         font-size: 1rem;
+        background: #ffffff;
       }
 
-      button {
-        margin-top: 24px;
+      input[type="color"] {
+        height: 62px;
+        padding: 7px;
         cursor: pointer;
       }
 
-      .subtitle {
-        color: #555;
+      input:focus,
+      select:focus {
+        outline: 4px solid rgba(37, 99, 235, 0.14);
+        border-color: var(--primary);
+      }
+
+      button {
+        margin-top: 26px;
+        border: none;
+        background: var(--primary);
+        color: white;
+        font-weight: 800;
+        cursor: pointer;
+        transition: background 0.15s ease, transform 0.15s ease;
+      }
+
+      button:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      .hint {
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 16px;
+        background: var(--soft-blue);
+        color: #1e3a8a;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 860px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 2.35rem;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          gap: 16px;
+          flex-direction: column;
+          margin-bottom: 34px;
+        }
       }
     </style>
   </head>
+
   <body>
-    <div class="card">
-      <h1>OpenFactory Liquid Personalization</h1>
-      <p class="subtitle">
-        Create a personalized liquid product order for the virtual factory.
-      </p>
+    <main class="page">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">OF</div>
+          <div>OpenFactory Virtual Factory</div>
+        </div>
 
-      <form method="post" action="/order">
-        <label for="color">Target color</label>
-        <input id="color" name="color" type="color" value="#7840c8" required>
+        <div class="status">Prototype App</div>
+      </header>
 
-        <label for="volume_ml">Volume</label>
-        <select id="volume_ml" name="volume_ml" required>
-          <option value="100">100 ml</option>
-          <option value="250" selected>250 ml</option>
-          <option value="500">500 ml</option>
-        </select>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Personalized production workflow</div>
 
-        <label for="label_text">Label text</label>
-        <input
-          id="label_text"
-          name="label_text"
-          type="text"
-          value="Hadi Custom Mix"
-          required
-        >
+          <h1>Design a custom liquid product order.</h1>
 
-        <button type="submit">Create Virtual Work Order</button>
-      </form>
-    </div>
+          <p class="lead">
+            This OpenFactory app converts a user-defined product request into a
+            first virtual recipe and production sequence for a personalized liquid
+            production line.
+          </p>
+
+          <div class="concept-card">
+            <h2>What this prototype does</h2>
+
+            <div class="workflow">
+              <div class="workflow-step">
+                <div class="step-number">1</div>
+                <div>
+                  <div class="step-title">User creates a product order</div>
+                  <div class="step-description">
+                    The customer chooses a target color, bottle volume, and label text.
+                  </div>
+                </div>
+              </div>
+
+              <div class="workflow-step">
+                <div class="step-number">2</div>
+                <div>
+                  <div class="step-title">App computes the recipe</div>
+                  <div class="step-description">
+                    RGB and volume are converted into red, green, blue, and base liquid quantities.
+                  </div>
+                </div>
+              </div>
+
+              <div class="workflow-step">
+                <div class="step-number">3</div>
+                <div>
+                  <div class="step-title">Virtual work order is generated</div>
+                  <div class="step-description">
+                    The order is translated into a production sequence for the future factory.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-card">
+          <h2>Create product order</h2>
+          <p>Select the personalized liquid product parameters.</p>
+
+          <form method="post" action="/order">
+            <label for="color">Target color</label>
+            <input id="color" name="color" type="color" value="#7840c8" required>
+
+            <label for="volume_ml">Volume</label>
+            <select id="volume_ml" name="volume_ml" required>
+              <option value="100">100 ml</option>
+              <option value="250" selected>250 ml</option>
+              <option value="500">500 ml</option>
+            </select>
+
+            <label for="label_text">Label text</label>
+            <input
+              id="label_text"
+              name="label_text"
+              type="text"
+              value="Hadi Custom Mix"
+              required
+            >
+
+            <button type="submit">Create Virtual Work Order</button>
+
+            <div class="hint">
+              No physical hardware is controlled yet. This first version creates
+              the virtual product recipe and work order.
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
   </body>
 </html>
