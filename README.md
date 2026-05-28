@@ -1,39 +1,50 @@
-```markdown
 # OpenFactory Liquid Personalization
 
 OpenFactory app for a personalized liquid production line.
 
-## Goal
+This repository is the first software prototype for a virtual OpenFactory-based production line. The app allows a user to create a personalized liquid product order by choosing a target color, liquid volume, and label text. The app then generates a first virtual recipe and production sequence.
 
-This project is the first software prototype for a virtual OpenFactory-based production line.
+## Thesis Context
 
-The user can create a personalized liquid product order by choosing:
+The goal is to start with a virtual factory workflow before connecting the physical lab setup.
 
-- RGB color
-- liquid volume
-- label text
-
-The app then generates a first virtual recipe and production sequence.
+The future lab setup is expected to be based on a 4-nozzle automatic liquid filling machine. The production line will eventually support personalized liquid products, where the user defines product parameters and OpenFactory converts them into executable work orders.
 
 ## Current Scope
 
-This first version is intentionally simple.
+This first version does not control real hardware yet.
 
-It does not control real hardware yet. The goal is to start with a virtual factory workflow before connecting the physical 4-nozzle liquid filling machine, sensors, pumps, conveyor, and labeling hardware.
+It currently provides:
+
+- a Flask-based OpenFactory App
+- a user-facing web form for product orders
+- RGB color selection
+- volume selection
+- label text input
+- recipe calculation
+- virtual production sequence generation
+- unit tests for recipe logic
+- route tests for the web app
 
 ## Planned Factory Concept
 
 User order:
 
+```text
 RGB color + volume + label
+```
 
 OpenFactory logic:
 
+```text
 Product order -> recipe calculation -> virtual work order
+```
 
 Virtual production flow:
 
+```text
 Bottle source -> conveyor -> bottle detection -> filling station -> optional labeling -> finished bottle
+```
 
 ## Planned Hardware Context
 
@@ -58,6 +69,51 @@ The future physical setup may include:
 - bottles, caps, labels, and liquid consumables
 - industrial control unit running Linux
 
+## Development Setup
+
+Create and activate a virtual environment:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+Install the project with development dependencies:
+
+```powershell
+pip install -e .[dev]
+```
+
+## Run Tests
+
+```powershell
+pytest
+```
+
+Expected result:
+
+```text
+8 passed
+```
+
+## Run the App Locally
+
+```powershell
+liquid-personalization-app
+```
+
+Then open:
+
+```text
+http://127.0.0.1:4000
+```
+
+Health check:
+
+```text
+http://127.0.0.1:4000/health
+```
+
 ## First Software Milestone
 
 The first milestone is to build a minimal Flask-based OpenFactory App that allows a user to:
@@ -81,4 +137,3 @@ Possible progression:
 5. connection to the filling machine
 6. optional labeling integration
 7. full OpenFactory-controlled personalized production line
-```
