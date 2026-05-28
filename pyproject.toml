@@ -1,0 +1,36 @@
+[project]
+name = "openfactory-liquid-personalization"
+version = "0.1.0"
+description = "OpenFactory app for a personalized liquid production line."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "OpenFactory @ git+https://github.com/openfactoryio/openfactory-core.git@v0.6.0",
+    "flask>=3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.6.0",
+]
+
+[project.scripts]
+liquid-personalization-app = "liquid_personalization_app.app:main"
+
+[build-system]
+requires = ["setuptools>=68.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+liquid_personalization_app = ["templates/*.html"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
