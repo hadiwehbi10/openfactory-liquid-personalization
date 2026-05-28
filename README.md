@@ -1,7 +1,3 @@
-You’re right boss, my bad. The issue is that I included markdown code blocks **inside** the README, so it broke the copy-paste.
-
-Replace the full `README.md` with this cleaner version:
-
 ```markdown
 # OpenFactory Liquid Personalization
 
