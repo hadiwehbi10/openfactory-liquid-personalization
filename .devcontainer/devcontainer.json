@@ -1,10 +1,22 @@
 {
   "name": "OpenFactory Liquid Personalization",
-  "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
-  "features": {},
+  "image": "ghcr.io/openfactoryio/devcontainer-py3.12:v0.6.0",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:3.0.1": {},
+    "ghcr.io/openfactoryio/openfactory-sdk/infra:0.6.0": {}
+  },
   "customizations": {
     "vscode": {
       "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash-login",
+        "terminal.integrated.profiles.linux": {
+          "bash-login": {
+            "path": "/bin/bash",
+            "args": [
+              "-l"
+            ]
+          }
+        },
         "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.testing.pytestEnabled": true,
         "python.testing.unittestEnabled": false,
@@ -14,18 +26,34 @@
       },
       "extensions": [
         "ms-python.python",
-        "ms-python.vscode-pylance"
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker"
       ]
     }
   },
   "postCreateCommand": "pip install --upgrade pip && pip install -e .[dev]",
   "forwardPorts": [
-    4000
+    80,
+    4000,
+    8088,
+    9092
   ],
   "portsAttributes": {
+    "80": {
+      "label": "OpenFactory Traefik",
+      "onAutoForward": "notify"
+    },
     "4000": {
       "label": "OpenFactory Liquid Personalization App",
       "onAutoForward": "notify"
+    },
+    "8088": {
+      "label": "ksqlDB",
+      "onAutoForward": "silent"
+    },
+    "9092": {
+      "label": "Kafka",
+      "onAutoForward": "silent"
     }
   },
   "remoteUser": "vscode"
