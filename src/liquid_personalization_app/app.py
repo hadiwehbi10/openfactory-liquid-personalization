@@ -98,8 +98,9 @@ def create_app(test_mode: bool = True) -> LiquidPersonalizationApp:
 
 
 def main() -> None:
-    """Run the OpenFactory Flask application locally."""
-    app = create_app(test_mode=True)
+    """Run the OpenFactory Flask application."""
+    test_mode = os.getenv("OPENFACTORY_TEST_MODE", "false").lower() == "true"
+    app = create_app(test_mode=test_mode)
     app.run()
 
 

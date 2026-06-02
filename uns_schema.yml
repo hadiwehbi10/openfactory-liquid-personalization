@@ -1,0 +1,8 @@
+namespace_structure:
+  - inc: OpenFactory
+  - area: ANY
+  - station: ANY
+  - asset: ANY
+  - attribute: ANY
+
+uns_template: inc.area.station.asset.attribute

@@ -1,0 +1,17 @@
+apps:
+  liquid-personalization-app:
+    uuid: LIQUID-PERSONALIZATION-APP
+    uns:
+      area: Lab
+      station: LiquidPersonalization
+    image: liquid-personalization-app
+    environment:
+      - LOG_LEVEL=${LIQUID_PERSONALIZATION_APP_LOG_LEVEL:-INFO}
+      - OPENFACTORY_TEST_MODE=false
+      - KAFKA_BROKER=172.17.0.2:9092
+    routing:
+      expose: true
+      port: 4000
+      hostname: liquid-personalization-app
+    networks:
+      - factory-net
