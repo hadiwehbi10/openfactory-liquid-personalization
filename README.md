@@ -17,6 +17,10 @@ This first version does not control real hardware yet.
 It currently provides:
 
 - a Flask-based OpenFactory App
+- OpenFactory app deployment through `ofa apps up`
+- Docker-based app packaging
+- Traefik routing through OpenFactory
+- a simple UNS schema for app registration
 - a user-facing web form for product orders
 - RGB color selection
 - volume selection
@@ -71,22 +75,17 @@ The future physical setup may include:
 
 ## Development Setup
 
-Create and activate a virtual environment:
+This project is intended to be developed inside the OpenFactory SDK devcontainer.
 
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-```
+After opening the repository in the devcontainer, install the project with development dependencies:
 
-Install the project with development dependencies:
-
-```powershell
+```bash
 pip install -e .[dev]
 ```
 
 ## Run Tests
 
-```powershell
+```bash
 pytest
 ```
 
@@ -96,10 +95,68 @@ Expected result:
 8 passed
 ```
 
-## Run the App Locally
+## Run the App as an OpenFactory App
 
-```powershell
-liquid-personalization-app
+Start the OpenFactory stack from inside the devcontainer:
+
+```bash
+spinup
+```
+
+Build the app image:
+
+```bash
+docker build -t liquid-personalization-app .
+```
+
+Export the UNS schema path:
+
+```bash
+export OPENFACTORY_UNS_SCHEMA=/workspaces/openfactory-liquid-personalization/uns_schema.yml
+```
+
+Deploy the app with OpenFactory:
+
+```bash
+ofa apps up app_liquid_personalization.yml
+```
+
+Check deployed apps:
+
+```bash
+ofa apps ls
+```
+
+The app should appear as available:
+
+```text
+LIQUID-PERSONALIZATION-APP   AVAILABLE
+```
+
+Open the app through Traefik:
+
+```text
+http://localhost/liquid-personalization-app/
+```
+
+Health check:
+
+```text
+http://localhost/liquid-personalization-app/health
+```
+
+To stop the app:
+
+```bash
+ofa apps down app_liquid_personalization.yml
+```
+
+## Optional Local Development Run
+
+For quick local development without OpenFactory deployment, the app can still be started directly:
+
+```bash
+OPENFACTORY_TEST_MODE=true liquid-personalization-app
 ```
 
 Then open:
@@ -114,6 +171,8 @@ Health check:
 http://127.0.0.1:4000/health
 ```
 
+This mode is mainly for development and testing. The intended OpenFactory deployment uses `ofa apps up`.
+
 ## First Software Milestone
 
 The first milestone is to build a minimal Flask-based OpenFactory App that allows a user to:
@@ -123,6 +182,8 @@ The first milestone is to build a minimal Flask-based OpenFactory App that allow
 3. enter label text
 4. generate a virtual recipe
 5. generate a virtual production sequence
+
+This milestone now includes deployment as a proper OpenFactory-managed app with Docker packaging and Traefik routing.
 
 ## Later Milestones
 
