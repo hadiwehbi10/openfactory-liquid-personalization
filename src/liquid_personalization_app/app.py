@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 from openfactory.apps.ofa_flask_app import OpenFactoryFlaskApp
 from openfactory.kafka import KSQLDBClient
 
 from liquid_personalization_app.recipe import calculate_recipe
+from liquid_personalization_app.station.simulator import station_simulator
 
 
 class LiquidPersonalizationApp(OpenFactoryFlaskApp):
@@ -20,6 +21,10 @@ class LiquidPersonalizationApp(OpenFactoryFlaskApp):
 
     def configure_routes(self) -> None:
         """Configure the web routes for the liquid personalization app."""
+
+        # ==========================================================
+        # CUSTOMER INTERFACE
+        # ==========================================================
 
         @self.app.get("/")
         def index() -> str:
@@ -63,6 +68,42 @@ class LiquidPersonalizationApp(OpenFactoryFlaskApp):
                 production_steps=production_steps,
             )
 
+        # ==========================================================
+        # FACTORY PLAYGROUND
+        # ==========================================================
+
+        @self.app.get("/playground")
+        def playground() -> str:
+            return render_template("playground/index.html")
+
+        # ==========================================================
+        # PLAYGROUND API - SIMULATION MODE
+        # ==========================================================
+
+        @self.app.get("/api/playground/state")
+        def playground_state():
+            return jsonify(station_simulator.get_state())
+
+        @self.app.post("/api/playground/conveyor/start")
+        def start_conveyor():
+            return jsonify(station_simulator.start_conveyor())
+
+        @self.app.post("/api/playground/conveyor/stop")
+        def stop_conveyor():
+            return jsonify(station_simulator.stop_conveyor())
+
+        @self.app.post("/api/playground/stopper/engage")
+        def engage_stopper():
+            return jsonify(station_simulator.engage_stopper())
+
+        @self.app.post("/api/playground/stopper/release")
+        def release_stopper():
+            return jsonify(station_simulator.release_stopper())
+
+        # ==========================================================
+        # HEALTH
+        # ==========================================================
+
         @self.app.get("/health")
         def health() -> dict[str, str]:
             return {"status": "ok"}
@@ -89,8 +130,13 @@ def create_app(test_mode: bool = True) -> LiquidPersonalizationApp:
     a full OpenFactory/Kafka environment.
     """
     return LiquidPersonalizationApp(
-        ksqlClient=KSQLDBClient(os.getenv("KSQLDB_URL", "http://localhost:8088")),
-        bootstrap_servers=os.getenv("KAFKA_BROKER", "localhost:9092"),
+        ksqlClient=KSQLDBClient(
+            os.getenv("KSQLDB_URL", "http://localhost:8088")
+        ),
+        bootstrap_servers=os.getenv(
+            "KAFKA_BROKER",
+            "localhost:9092",
+        ),
         asset_router_url=os.getenv("ASSET_ROUTER_URL"),
         loglevel=os.getenv("LOG_LEVEL", "INFO"),
         test_mode=test_mode,
@@ -99,7 +145,10 @@ def create_app(test_mode: bool = True) -> LiquidPersonalizationApp:
 
 def main() -> None:
     """Run the OpenFactory Flask application."""
-    test_mode = os.getenv("OPENFACTORY_TEST_MODE", "false").lower() == "true"
+    test_mode = (
+        os.getenv("OPENFACTORY_TEST_MODE", "false").lower() == "true"
+    )
+
     app = create_app(test_mode=test_mode)
     app.run()
 

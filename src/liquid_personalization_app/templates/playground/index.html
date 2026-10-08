@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>OpenFactory | Liquid Personalization</title>
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='playground/css/playground.css') }}"
+  >
+</head>
+
+<body>
+  <main class="app-shell">
+
+    <!-- =========================================================
+         APPLICATION HEADER
+         ========================================================= -->
+    <header class="app-header">
+
+      <div class="brand">
+        <div class="brand-mark">OF</div>
+
+        <div class="brand-copy">
+          <strong>OpenFactory</strong>
+          <span>Liquid Personalization</span>
+        </div>
+      </div>
+
+      <div class="header-state">
+
+        <div class="header-chip simulation-chip">
+          <span class="chip-icon"></span>
+          Simulation
+        </div>
+
+        <div class="header-chip ready-chip">
+          <span class="ready-dot"></span>
+          System Ready
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         PAGE INTRODUCTION
+         ========================================================= -->
+    <section class="page-intro">
+
+      <div class="intro-copy">
+
+        <div class="eyebrow">
+          Factory Control & Digital Twin
+        </div>
+
+        <h1>Production Station</h1>
+
+        <p>
+          Monitor, simulate and control the liquid personalization
+          station through OpenFactory.
+        </p>
+
+      </div>
+
+      <div class="mode-selector">
+
+        <button
+          class="mode-option active"
+          type="button"
+        >
+          Manual
+        </button>
+
+        <button
+          class="mode-option"
+          type="button"
+          disabled
+        >
+          Automatic
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         DIGITAL TWIN
+         ========================================================= -->
+    <section class="surface process-surface">
+
+      <div class="surface-header">
+
+        <div>
+          <span class="section-label">
+            Live Process
+          </span>
+
+          <h2>Station Overview</h2>
+        </div>
+
+        <div class="live-state">
+          <span class="live-dot"></span>
+          Live
+        </div>
+
+      </div>
+
+
+      <!-- =======================================================
+           PSEUDO-3D FACTORY VIEW
+           ======================================================= -->
+      <div class="factory-view">
+
+        <div class="factory-grid"></div>
+        <div class="factory-glow glow-one"></div>
+        <div class="factory-glow glow-two"></div>
+
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+
+        <!-- Digital twin identifier -->
+        <div class="digital-twin-tag">
+
+          <div>
+            <span>Digital Twin</span>
+            <strong>OPTA-LAB-001</strong>
+          </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             REAR SENSOR SUPPORT RAIL
+             ===================================================== -->
+        <div class="rear-rail">
+
+          <div class="rail-end rail-end-left"></div>
+          <div class="rail-end rail-end-right"></div>
+
+        </div>
+
+
+        <!-- =====================================================
+             SENSOR 1
+             ===================================================== -->
+        <div
+          class="sensor-module sensor-one"
+          id="sensor1Visual"
+        >
+
+          <div class="component-callout sensor-callout">
+
+            <div>
+              <strong>Sensor 1</strong>
+
+              <span id="sensor1SceneState">
+                Clear
+              </span>
+            </div>
+
+          </div>
+
+
+          <div class="sensor-hardware">
+
+            <div class="sensor-post"></div>
+
+            <div class="sensor-head">
+
+              <div class="sensor-face">
+                <div class="sensor-lens"></div>
+              </div>
+
+              <div class="sensor-indicator"></div>
+
+            </div>
+
+          </div>
+
+          <div class="detection-beam"></div>
+
+        </div>
+
+
+        <!-- =====================================================
+             SENSOR 2
+             ===================================================== -->
+        <div
+          class="sensor-module sensor-two"
+          id="sensor2Visual"
+        >
+
+          <div class="component-callout sensor-callout">
+
+            <div>
+              <strong>Sensor 2</strong>
+
+              <span id="sensor2SceneState">
+                Clear
+              </span>
+            </div>
+
+          </div>
+
+
+          <div class="sensor-hardware">
+
+            <div class="sensor-post"></div>
+
+            <div class="sensor-head">
+
+              <div class="sensor-face">
+                <div class="sensor-lens"></div>
+              </div>
+
+              <div class="sensor-indicator"></div>
+
+            </div>
+
+          </div>
+
+          <div class="detection-beam"></div>
+
+        </div>
+
+
+        <!-- =====================================================
+             CONVEYOR
+             ===================================================== -->
+        <div
+          class="conveyor-stage"
+          id="conveyorVisual"
+        >
+
+          <div class="conveyor-shadow"></div>
+
+
+          <!-- Belt -->
+          <div class="belt-top">
+
+            <div class="belt-inner">
+
+              <div class="belt-track-line track-one"></div>
+              <div class="belt-track-line track-two"></div>
+
+              <div class="belt-flow">
+                <span>‹</span>
+                <span>‹</span>
+                <span>‹</span>
+                <span>‹</span>
+                <span>‹</span>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- Front chassis -->
+          <div class="conveyor-chassis">
+
+            <div class="chassis-highlight"></div>
+
+            <div class="rollers">
+
+              <div class="roller">
+                <span></span>
+              </div>
+
+              <div class="roller">
+                <span></span>
+              </div>
+
+              <div class="roller">
+                <span></span>
+              </div>
+
+              <div class="roller">
+                <span></span>
+              </div>
+
+              <div class="roller">
+                <span></span>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- Support legs -->
+          <div class="conveyor-supports">
+
+            <div class="support-leg">
+              <div class="support-foot"></div>
+            </div>
+
+            <div class="support-leg">
+              <div class="support-foot"></div>
+            </div>
+
+          </div>
+
+
+          <!-- Bottle -->
+          <div
+            class="bottle"
+            id="bottleVisual"
+          >
+
+            <div class="bottle-cap"></div>
+
+            <div class="bottle-neck"></div>
+
+            <div class="bottle-body">
+
+              <div class="bottle-glass-highlight"></div>
+
+              <div class="bottle-liquid"></div>
+
+              <div class="bottle-label">
+                OF
+              </div>
+
+            </div>
+
+            <div class="bottle-shadow"></div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             STOPPER
+             ===================================================== -->
+        <div
+          class="stopper-module"
+          id="stopperVisual"
+        >
+
+          <div class="stopper-hardware">
+
+            <div class="stopper-mount">
+
+              <div class="stopper-hinge"></div>
+
+              <div class="stopper-arm">
+                <div class="stopper-contact"></div>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="component-callout stopper-callout">
+
+            <div>
+              <strong>Stopper</strong>
+
+              <span id="stopperSceneState">
+                Released
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             FACTORY FLOOR
+             ===================================================== -->
+        <div class="factory-floor">
+
+          <div class="floor-grid"></div>
+
+          <div class="floor-line floor-line-one"></div>
+          <div class="floor-line floor-line-two"></div>
+
+        </div>
+
+
+        <!-- =====================================================
+             STATION INFORMATION STRIP
+             ===================================================== -->
+        <div class="scene-status-strip">
+
+          <div class="scene-status-primary">
+
+            <div>
+              <span>Conveyor</span>
+              <strong>Main Transport Line</strong>
+            </div>
+
+          </div>
+
+
+          <div class="scene-status-divider"></div>
+
+
+          <div class="scene-status-item">
+
+            <span class="scene-status-label">
+              STATE
+            </span>
+
+            <div class="scene-status-value">
+
+              <span
+                class="machine-state-dot"
+                id="conveyorSceneDot"
+              ></span>
+
+              <strong id="conveyorSceneState">
+                Stopped
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="scene-status-divider"></div>
+
+
+          <div class="scene-status-item">
+
+            <span class="scene-status-label">
+              CONTROL
+            </span>
+
+            <strong>
+              OPTA · R2
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         MAIN DASHBOARD
+         ========================================================= -->
+    <section class="dashboard-grid">
+
+
+      <!-- =======================================================
+           MANUAL CONTROL
+           ======================================================= -->
+      <section class="surface controls-surface">
+
+        <div class="surface-header">
+
+          <div>
+            <span class="section-label">
+              Operator Control
+            </span>
+
+            <h2>Manual Control</h2>
+          </div>
+
+          <div class="surface-index">
+            01
+          </div>
+
+        </div>
+
+
+        <!-- Conveyor -->
+        <div class="control-row">
+
+          <div class="control-identity">
+
+            <div class="device-icon">
+              CV
+            </div>
+
+            <div>
+
+              <strong>
+                Conveyor
+              </strong>
+
+              <span>
+                Main transport line
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="control-state">
+
+            <span class="state-dot neutral"></span>
+
+            <span id="conveyorControlState">
+              Stopped
+            </span>
+
+          </div>
+
+
+          <div class="control-actions">
+
+            <button
+              class="action-button action-primary"
+              id="startConveyorButton"
+              type="button"
+            >
+              <span>▶</span>
+              Start
+            </button>
+
+            <button
+              class="action-button action-secondary"
+              id="stopConveyorButton"
+              type="button"
+            >
+              Stop
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- Stopper -->
+        <div class="control-row">
+
+          <div class="control-identity">
+
+            <div class="device-icon">
+              ST
+            </div>
+
+            <div>
+
+              <strong>
+                Stopper
+              </strong>
+
+              <span>
+                Bottle positioning mechanism
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="control-state">
+
+            <span class="state-dot neutral"></span>
+
+            <span id="stopperControlState">
+              Released
+            </span>
+
+          </div>
+
+
+          <div class="control-actions">
+
+            <button
+              class="action-button action-primary"
+              id="engageStopperButton"
+              type="button"
+            >
+              Engage
+            </button>
+
+            <button
+              class="action-button action-secondary"
+              id="releaseStopperButton"
+              type="button"
+            >
+              Release
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- Speed -->
+        <div class="control-row speed-row">
+
+          <div class="control-identity">
+
+            <div class="device-icon muted-device">
+              SP
+            </div>
+
+            <div>
+
+              <strong>
+                Conveyor Speed
+              </strong>
+
+              <span>
+                Variable-speed interface
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="pending-chip">
+            Hardware Pending
+          </div>
+
+
+          <div class="speed-interface">
+
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value="40"
+              disabled
+            >
+
+            <strong>
+              40%
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="hardware-note">
+
+          <span class="note-icon">
+            i
+          </span>
+
+          Variable speed is reserved for the future motor-control
+          hardware interface.
+
+        </div>
+
+      </section>
+
+
+      <!-- =======================================================
+           STATION STATUS
+           ======================================================= -->
+      <section class="surface status-surface">
+
+        <div class="surface-header">
+
+          <div>
+            <span class="section-label">
+              System Health
+            </span>
+
+            <h2>Station Status</h2>
+          </div>
+
+          <div class="surface-index">
+            02
+          </div>
+
+        </div>
+
+
+        <div class="status-table">
+
+
+          <div class="status-entry">
+
+            <div class="status-entry-left">
+
+              <span class="health-dot healthy"></span>
+
+              <div>
+                <strong>OpenFactory</strong>
+                <span>Application layer</span>
+              </div>
+
+            </div>
+
+            <span class="status-entry-value healthy-text">
+              Connected
+            </span>
+
+          </div>
+
+
+          <div class="status-entry">
+
+            <div class="status-entry-left">
+
+              <span class="health-dot healthy"></span>
+
+              <div>
+                <strong>Station</strong>
+                <span>Runtime mode</span>
+              </div>
+
+            </div>
+
+            <span class="status-entry-value">
+              Simulation
+            </span>
+
+          </div>
+
+
+          <div class="status-entry">
+
+            <div class="status-entry-left">
+
+              <span class="io-code">
+                I1
+              </span>
+
+              <div>
+                <strong>Sensor 1</strong>
+                <span>Photoelectric sensor</span>
+              </div>
+
+            </div>
+
+            <span
+              class="status-entry-value"
+              id="sensor1Status"
+            >
+              Clear
+            </span>
+
+          </div>
+
+
+          <div class="status-entry">
+
+            <div class="status-entry-left">
+
+              <span class="io-code">
+                I2
+              </span>
+
+              <div>
+                <strong>Sensor 2</strong>
+                <span>Photoelectric sensor</span>
+              </div>
+
+            </div>
+
+            <span
+              class="status-entry-value"
+              id="sensor2Status"
+            >
+              Clear
+            </span>
+
+          </div>
+
+
+          <div class="status-entry">
+
+            <div class="status-entry-left">
+
+              <span class="io-code output-code">
+                R2
+              </span>
+
+              <div>
+                <strong>Conveyor</strong>
+                <span>OPTA relay output</span>
+              </div>
+
+            </div>
+
+            <span
+              class="status-entry-value"
+              id="conveyorStatus"
+            >
+              Stopped
+            </span>
+
+          </div>
+
+
+          <div class="status-entry">
+
+            <div class="status-entry-left">
+
+              <span class="io-code output-code">
+                R4
+              </span>
+
+              <div>
+                <strong>Stopper</strong>
+                <span>OPTA relay output</span>
+              </div>
+
+            </div>
+
+            <span
+              class="status-entry-value"
+              id="stopperStatus"
+            >
+              Released
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </section>
+
+
+    <!-- =========================================================
+         AUTOMATION
+         ========================================================= -->
+    <section class="surface automation-surface">
+
+      <div class="automation-content">
+
+        <div class="automation-info">
+
+          <div class="automation-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          <div>
+
+            <span class="section-label">
+              Automation
+            </span>
+
+            <h2>Complete Production Sequence</h2>
+
+            <p>
+              Run the complete simulated station sequence from bottle
+              entry through sensing and positioning.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <button
+          class="run-sequence-button"
+          id="runSequenceButton"
+          type="button"
+        >
+          <span class="run-icon">▶</span>
+
+          Run Sequence
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         EVENT TIMELINE
+         ========================================================= -->
+    <section class="surface event-surface">
+
+      <div class="surface-header">
+
+        <div>
+          <span class="section-label">
+            Activity
+          </span>
+
+          <h2>Event Timeline</h2>
+        </div>
+
+
+        <div class="event-header-actions">
+
+          <div class="recording-chip">
+            <span></span>
+            Recording
+          </div>
+
+          <button
+            class="clear-button"
+            id="clearEventsButton"
+            type="button"
+          >
+            Clear
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="event-list"
+        id="eventList"
+      >
+
+        <div class="event-item">
+
+          <span class="event-time">
+            --:--:--
+          </span>
+
+          <div class="event-track">
+            <span></span>
+          </div>
+
+          <div class="event-message">
+
+            <strong>
+              Playground initialized
+            </strong>
+
+            <span>
+              Station is ready in simulation mode.
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+    <footer class="app-footer">
+
+      <strong>
+        OpenFactory
+      </strong>
+
+      <span></span>
+
+      Liquid Personalization Research Playground
+
+    </footer>
+
+  </main>
+
+
+  <script
+    src="{{ url_for('static', filename='playground/js/playground.js') }}"
+  ></script>
+
+</body>
+</html>
