@@ -9,7 +9,7 @@ from openfactory.apps.ofa_flask_app import OpenFactoryFlaskApp
 from openfactory.kafka import KSQLDBClient
 
 from liquid_personalization_app.recipe import calculate_recipe
-from liquid_personalization_app.station.simulator import station_simulator
+from liquid_personalization_app.station import get_station_backend
 
 
 class LiquidPersonalizationApp(OpenFactoryFlaskApp):
@@ -17,6 +17,7 @@ class LiquidPersonalizationApp(OpenFactoryFlaskApp):
 
     def create_flask_app(self) -> Flask:
         """Create the Flask app used by the OpenFactory runtime."""
+
         return Flask(__name__)
 
     def configure_routes(self) -> None:
@@ -33,10 +34,14 @@ class LiquidPersonalizationApp(OpenFactoryFlaskApp):
         @self.app.post("/order")
         def create_order() -> str:
             color_hex = request.form["color"]
-            volume_ml = float(request.form["volume_ml"])
+            volume_ml = float(
+                request.form["volume_ml"]
+            )
             label_text = request.form["label_text"]
 
-            red, green, blue = _hex_to_rgb(color_hex)
+            red, green, blue = _hex_to_rgb(
+                color_hex
+            )
 
             recipe = calculate_recipe(
                 red=red,
@@ -50,7 +55,10 @@ class LiquidPersonalizationApp(OpenFactoryFlaskApp):
                 "Feed empty bottle into conveyor",
                 "Move bottle to filling station",
                 "Detect bottle presence",
-                "Dispense red, green, blue, and base liquid according to recipe",
+                (
+                    "Dispense red, green, blue, and "
+                    "base liquid according to recipe"
+                ),
                 "Move bottle to labeling station",
                 "Apply or print custom label",
                 "Mark order as complete",
@@ -74,31 +82,68 @@ class LiquidPersonalizationApp(OpenFactoryFlaskApp):
 
         @self.app.get("/playground")
         def playground() -> str:
-            return render_template("playground/index.html")
+            return render_template(
+                "playground/index.html"
+            )
 
         # ==========================================================
-        # PLAYGROUND API - SIMULATION MODE
+        # STATION API
+        #
+        # These routes do not care whether the backend is:
+        #
+        #   - StationSimulator
+        #   - OpenFactoryStation
+        #
+        # That is the key architectural separation.
         # ==========================================================
 
         @self.app.get("/api/playground/state")
         def playground_state():
-            return jsonify(station_simulator.get_state())
+            station = get_station_backend()
 
-        @self.app.post("/api/playground/conveyor/start")
+            return jsonify(
+                station.get_state()
+            )
+
+        @self.app.post(
+            "/api/playground/conveyor/start"
+        )
         def start_conveyor():
-            return jsonify(station_simulator.start_conveyor())
+            station = get_station_backend()
 
-        @self.app.post("/api/playground/conveyor/stop")
+            return jsonify(
+                station.start_conveyor()
+            )
+
+        @self.app.post(
+            "/api/playground/conveyor/stop"
+        )
         def stop_conveyor():
-            return jsonify(station_simulator.stop_conveyor())
+            station = get_station_backend()
 
-        @self.app.post("/api/playground/stopper/engage")
+            return jsonify(
+                station.stop_conveyor()
+            )
+
+        @self.app.post(
+            "/api/playground/stopper/engage"
+        )
         def engage_stopper():
-            return jsonify(station_simulator.engage_stopper())
+            station = get_station_backend()
 
-        @self.app.post("/api/playground/stopper/release")
+            return jsonify(
+                station.engage_stopper()
+            )
+
+        @self.app.post(
+            "/api/playground/stopper/release"
+        )
         def release_stopper():
-            return jsonify(station_simulator.release_stopper())
+            station = get_station_backend()
+
+            return jsonify(
+                station.release_stopper()
+            )
 
         # ==========================================================
         # HEALTH
@@ -106,50 +151,88 @@ class LiquidPersonalizationApp(OpenFactoryFlaskApp):
 
         @self.app.get("/health")
         def health() -> dict[str, str]:
-            return {"status": "ok"}
+            return {
+                "status": "ok",
+            }
 
 
-def _hex_to_rgb(color_hex: str) -> tuple[int, int, int]:
+def _hex_to_rgb(
+    color_hex: str,
+) -> tuple[int, int, int]:
     """Convert a hex color string to RGB values."""
+
     normalized = color_hex.lstrip("#")
 
     if len(normalized) != 6:
-        raise ValueError("color_hex must contain 6 hexadecimal characters")
+        raise ValueError(
+            "color_hex must contain "
+            "6 hexadecimal characters"
+        )
 
-    red = int(normalized[0:2], 16)
-    green = int(normalized[2:4], 16)
-    blue = int(normalized[4:6], 16)
+    red = int(
+        normalized[0:2],
+        16,
+    )
+
+    green = int(
+        normalized[2:4],
+        16,
+    )
+
+    blue = int(
+        normalized[4:6],
+        16,
+    )
 
     return red, green, blue
 
 
-def create_app(test_mode: bool = True) -> LiquidPersonalizationApp:
+def create_app(
+    test_mode: bool = True,
+) -> LiquidPersonalizationApp:
     """Create the OpenFactory Flask app.
 
-    The default test_mode=True lets the app run locally without requiring
-    a full OpenFactory/Kafka environment.
+    The default test_mode=True lets the app run locally
+    without requiring a full OpenFactory/Kafka environment.
     """
+
     return LiquidPersonalizationApp(
         ksqlClient=KSQLDBClient(
-            os.getenv("KSQLDB_URL", "http://localhost:8088")
+            os.getenv(
+                "KSQLDB_URL",
+                "http://localhost:8088",
+            )
         ),
         bootstrap_servers=os.getenv(
             "KAFKA_BROKER",
             "localhost:9092",
         ),
-        asset_router_url=os.getenv("ASSET_ROUTER_URL"),
-        loglevel=os.getenv("LOG_LEVEL", "INFO"),
+        asset_router_url=os.getenv(
+            "ASSET_ROUTER_URL"
+        ),
+        loglevel=os.getenv(
+            "LOG_LEVEL",
+            "INFO",
+        ),
         test_mode=test_mode,
     )
 
 
 def main() -> None:
     """Run the OpenFactory Flask application."""
+
     test_mode = (
-        os.getenv("OPENFACTORY_TEST_MODE", "false").lower() == "true"
+        os.getenv(
+            "OPENFACTORY_TEST_MODE",
+            "false",
+        ).lower()
+        == "true"
     )
 
-    app = create_app(test_mode=test_mode)
+    app = create_app(
+        test_mode=test_mode
+    )
+
     app.run()
 
 

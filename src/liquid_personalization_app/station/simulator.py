@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from threading import Lock
 
+from liquid_personalization_app.station.base import StationState
+
 
 class StationSimulator:
     """Maintain the simulated state of the factory station."""
@@ -13,11 +15,13 @@ class StationSimulator:
 
         self.sensor1_detected = False
         self.sensor2_detected = False
+
         self.conveyor_running = False
         self.stopper_engaged = False
 
-    def get_state(self) -> dict[str, bool]:
+    def get_state(self) -> StationState:
         """Return the current simulated station state."""
+
         with self._lock:
             return {
                 "sensor1_detected": self.sensor1_detected,
@@ -26,33 +30,34 @@ class StationSimulator:
                 "stopper_engaged": self.stopper_engaged,
             }
 
-    def start_conveyor(self) -> dict[str, bool]:
+    def start_conveyor(self) -> StationState:
         """Start the simulated conveyor."""
+
         with self._lock:
             self.conveyor_running = True
 
         return self.get_state()
 
-    def stop_conveyor(self) -> dict[str, bool]:
+    def stop_conveyor(self) -> StationState:
         """Stop the simulated conveyor."""
+
         with self._lock:
             self.conveyor_running = False
 
         return self.get_state()
 
-    def engage_stopper(self) -> dict[str, bool]:
-        """Engage the simulated stopper."""
+    def engage_stopper(self) -> StationState:
+        """Engage the simulated bottle stopper."""
+
         with self._lock:
             self.stopper_engaged = True
 
         return self.get_state()
 
-    def release_stopper(self) -> dict[str, bool]:
-        """Release the simulated stopper."""
+    def release_stopper(self) -> StationState:
+        """Release the simulated bottle stopper."""
+
         with self._lock:
             self.stopper_engaged = False
 
         return self.get_state()
-
-
-station_simulator = StationSimulator()

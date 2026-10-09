@@ -1,17 +1,34 @@
 apps:
+
   liquid-personalization-app:
+
     uuid: LIQUID-PERSONALIZATION-APP
+
     uns:
       area: Lab
       station: LiquidPersonalization
+
     image: liquid-personalization-app
+
     environment:
       - LOG_LEVEL=${LIQUID_PERSONALIZATION_APP_LOG_LEVEL:-INFO}
       - OPENFACTORY_TEST_MODE=false
-      - KAFKA_BROKER=172.17.0.2:9092
+
+      # Select station backend.
+      # Safe default is simulation.
+      # At the lab we will set STATION_MODE=real.
+      - STATION_MODE=${STATION_MODE:-simulation}
+
+      # Reuse the OpenFactory infrastructure configuration
+      # from the environment where this app is deployed.
+      - KAFKA_BROKER=${KAFKA_BROKER}
+      - KSQLDB_URL=${KSQLDB_URL}
+      - ASSET_ROUTER_URL=${ASSET_ROUTER_URL}
+
     routing:
       expose: true
       port: 4000
       hostname: liquid-personalization-app
+
     networks:
       - factory-net
