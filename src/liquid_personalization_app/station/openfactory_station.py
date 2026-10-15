@@ -59,7 +59,16 @@ class OpenFactoryStation:
             False = clear
         """
 
-        return not bool(raw_value)
+        return not OpenFactoryStation._read_bool(raw_value)
+
+    @staticmethod
+    def _read_bool(attribute: Any) -> bool:
+        value = getattr(attribute, "value", attribute)
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str) and value.strip().lower() in ("true", "false"):
+            return value.strip().lower() == "true"
+        raise ValueError(f"Unexpected boolean value: {value!r}")
 
     def get_state(self) -> StationState:
         """Read and normalize the current OpenFactory station state."""
@@ -71,10 +80,10 @@ class OpenFactoryStation:
             "sensor2_detected": self._sensor_detected(
                 self._asset.digital_input_i2
             ),
-            "conveyor_running": bool(
+            "conveyor_running": self._read_bool(
                 self._asset.relay_2
             ),
-            "stopper_engaged": bool(
+            "stopper_engaged": self._read_bool(
                 self._asset.relay_4
             ),
         }

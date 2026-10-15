@@ -233,6 +233,9 @@ def main() -> None:
         test_mode=test_mode
     )
 
+    if os.getenv("STATION_MODE", "simulation").strip().lower() == "real":
+        get_station_backend()
+
     app.run()
 
 

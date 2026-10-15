@@ -38,7 +38,7 @@ const elements = {
 
 
 async function request(url, options = {}) {
-  const response = await fetch(url, {
+  const response = await fetch(window.location.pathname.replace(/\/playground\/?$/, "") + url, {
     method: options.method || "GET",
     headers: {
       "Content-Type": "application/json",
@@ -291,4 +291,19 @@ elements.clearEventsButton.addEventListener(
 );
 
 
+let statePollInFlight = false;
+
+async function refreshLiveState() {
+  if (statePollInFlight) return;
+  statePollInFlight = true;
+  try {
+    applyServerState(await request("/api/playground/state"));
+  } catch (error) {
+    console.error("Live state refresh failed:", error);
+  } finally {
+    statePollInFlight = false;
+  }
+}
+
 loadInitialState();
+setInterval(refreshLiveState, 500);
