@@ -54,6 +54,9 @@ async function request(url, options = {}) {
 
 
 function applyServerState(serverState) {
+  const availability = String(serverState.opta_availability ?? "UNKNOWN").trim().toUpperCase();
+  document.getElementById("optaAvailability").textContent = availability === "AVAILABLE" ? "Available" : availability === "UNAVAILABLE" ? "Unavailable" : "Unknown";
+  document.getElementById("optaHealthDot").style.background = availability === "AVAILABLE" ? "#10b981" : availability === "UNAVAILABLE" ? "#ef4444" : "#f59e0b";
   state.conveyorRunning = serverState.conveyor_running;
   state.stopperEngaged = serverState.stopper_engaged;
   state.sensor1Detected = serverState.sensor1_detected;
@@ -244,6 +247,22 @@ async function releaseStopper() {
 }
 
 
+function updateApiStatus(online) {
+  const status = online ? "API Responding" : "API Unavailable";
+  document.getElementById("connectionLabel").textContent = status;
+  document.getElementById("appApiStatus").textContent = status;
+  document.getElementById("liveStatusLabel").textContent = online ? "Polling Active" : "Data Unavailable";
+  for (const id of ["connectionDot", "liveStatusDot"]) document.getElementById(id).style.background = online ? "#34d399" : "#ef4444";
+  elements.startConveyorButton.disabled = !online;
+  elements.engageStopperButton.disabled = !online;
+  if (!online) {
+    document.getElementById("optaAvailability").textContent = "Unknown";
+    document.getElementById("optaHealthDot").style.background = "#f59e0b";
+    for (const id of ["sensor1SceneState", "sensor2SceneState", "sensor1Status", "sensor2Status"]) document.getElementById(id).textContent = "Unavailable";
+    for (const id of ["conveyorSceneState", "conveyorControlState", "conveyorStatus", "stopperControlState", "stopperStatus", "stopperSceneState"]) document.getElementById(id).textContent = "Unknown";
+  }
+}
+
 async function loadInitialState() {
   try {
     const serverState = await request(
@@ -251,12 +270,14 @@ async function loadInitialState() {
     );
 
     applyServerState(serverState);
+    updateApiStatus(true);
   } catch (error) {
     console.error(error);
+    updateApiStatus(false);
 
     addEvent(
       "Station unavailable",
-      "Unable to load the simulated station state."
+      "Unable to retrieve station state from the API."
     );
   }
 }
@@ -298,8 +319,10 @@ async function refreshLiveState() {
   statePollInFlight = true;
   try {
     applyServerState(await request("/api/playground/state"));
+    updateApiStatus(true);
   } catch (error) {
     console.error("Live state refresh failed:", error);
+    updateApiStatus(false);
   } finally {
     statePollInFlight = false;
   }

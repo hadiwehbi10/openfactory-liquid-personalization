@@ -83,7 +83,8 @@ class LiquidPersonalizationApp(OpenFactoryFlaskApp):
         @self.app.get("/playground")
         def playground() -> str:
             return render_template(
-                "playground/index.html"
+                "playground/index.html",
+                station_mode=os.getenv("STATION_MODE", "simulation").strip().lower(),
             )
 
         # ==========================================================

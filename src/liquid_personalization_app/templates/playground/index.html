@@ -33,12 +33,12 @@
 
         <div class="header-chip simulation-chip">
           <span class="chip-icon"></span>
-          Simulation
+          {{ "Real Mode" if station_mode == "real" else "Simulation" }}
         </div>
 
         <div class="header-chip ready-chip">
-          <span class="ready-dot"></span>
-          System Ready
+          <span class="ready-dot" id="connectionDot"></span>
+          <span id="connectionLabel">Checking...</span>
         </div>
 
       </div>
@@ -104,8 +104,8 @@
         </div>
 
         <div class="live-state">
-          <span class="live-dot"></span>
-          Live
+          <span class="live-dot" id="liveStatusDot"></span>
+          <span id="liveStatusLabel">Checking...</span>
         </div>
 
       </div>
@@ -697,12 +697,18 @@
 
             </div>
 
-            <span class="status-entry-value healthy-text">
-              Connected
-            </span>
+            <span class="status-entry-value" id="appApiStatus">Checking...</span>
 
           </div>
 
+
+          <div class="status-entry">
+            <div class="status-entry-left">
+              <span class="health-dot" id="optaHealthDot"></span>
+              <div><strong>OPTA Controller</strong><span>Physical device availability</span></div>
+            </div>
+            <span class="status-entry-value" id="optaAvailability">Checking...</span>
+          </div>
 
           <div class="status-entry">
 
@@ -718,7 +724,7 @@
             </div>
 
             <span class="status-entry-value">
-              Simulation
+              {{ "Real Mode" if station_mode == "real" else "Simulation" }}
             </span>
 
           </div>
@@ -936,7 +942,7 @@
             </strong>
 
             <span>
-              Station is ready in simulation mode.
+              Waiting for station state response.
             </span>
 
           </div>

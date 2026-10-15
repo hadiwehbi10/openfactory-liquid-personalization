@@ -1,3 +1,5 @@
+import pytest
+
 """Tests for station backends."""
 
 from liquid_personalization_app.station.openfactory_station import (
@@ -15,6 +17,7 @@ class FakeAsset:
         # Physical sensors are active-low:
         # True = clear
         # False = detected
+        self.avail = "AVAILABLE"
         self.digital_input_i1 = True
         self.digital_input_i2 = True
 
@@ -114,4 +117,15 @@ def test_real_station_controls_stopper():
 
     station.release_stopper()
 
+    assert asset.relay_4 is False
+
+def test_unavailable_asset_blocks_activation():
+    asset = FakeAsset()
+    asset.avail = "UNAVAILABLE"
+    station = OpenFactoryStation(asset=asset)
+    with pytest.raises(RuntimeError, match="not AVAILABLE"):
+        station.start_conveyor()
+    with pytest.raises(RuntimeError, match="not AVAILABLE"):
+        station.engage_stopper()
+    assert asset.relay_2 is False
     assert asset.relay_4 is False

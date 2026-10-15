@@ -70,10 +70,21 @@ class OpenFactoryStation:
             return value.strip().lower() == "true"
         raise ValueError(f"Unexpected boolean value: {value!r}")
 
+    def _ensure_available(self) -> None:
+        """Refuse actuator activation unless OpenFactory reports OPTA available."""
+        attr = getattr(self._asset, "avail", None)
+        value = getattr(attr, "value", attr)
+        if not isinstance(value, str) or value.strip().upper() != "AVAILABLE":
+            raise RuntimeError("OPTA not AVAILABLE: actuator command refused")
+
     def get_state(self) -> StationState:
         """Read and normalize the current OpenFactory station state."""
 
+        availability_attr = getattr(self._asset, "avail", None)
+        availability_value = getattr(availability_attr, "value", availability_attr)
+
         return {
+            "opta_availability": str(availability_value or "UNKNOWN").strip().upper(),
             "sensor1_detected": self._sensor_detected(
                 self._asset.digital_input_i1
             ),
@@ -91,6 +102,7 @@ class OpenFactoryStation:
     def start_conveyor(self) -> StationState:
         """Start the real conveyor through OpenFactory."""
 
+        self._ensure_available()
         self._asset.relay_2 = True
 
         return self.get_state()
@@ -105,6 +117,7 @@ class OpenFactoryStation:
     def engage_stopper(self) -> StationState:
         """Engage the real bottle stopper through OpenFactory."""
 
+        self._ensure_available()
         self._asset.relay_4 = True
 
         return self.get_state()

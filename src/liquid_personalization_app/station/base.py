@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Protocol, TypedDict
+from typing import NotRequired, Protocol, TypedDict
 
 
 class StationState(TypedDict):
@@ -12,6 +12,7 @@ class StationState(TypedDict):
     sensor2_detected: bool
     conveyor_running: bool
     stopper_engaged: bool
+    opta_availability: NotRequired[str]
 
 
 class StationBackend(Protocol):
