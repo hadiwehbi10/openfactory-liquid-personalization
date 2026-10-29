@@ -9,6 +9,33 @@
  *   arduino-cli compile --fqbn arduino:mbed_opta:opta examples/opta_opcua_server -v --build-property compiler.cpp.extra_flags="-DUSE_MODBUS_SENSOR_MD02=1" -u -p /dev/ttyACM0
  */
 
+/*
+ * OpenFactory liquid-personalization laboratory — baseline annotation.
+ *
+ * Origin: Arduino_OPC_UA's opta_opcua_server example. This laboratory version
+ * sets a static Ethernet address; the generic OPC UA I/O exposure is retained.
+ *
+ * Present control boundary:
+ *   OPTA: reads physical inputs and executes OPC UA relay-write callbacks.
+ *   OpenFactory: observes OPC UA values and requests relay changes remotely.
+ *   This sketch does NOT run a local bottle-detection / conveyor sequence.
+ *
+ * Station wiring (verify before energizing hardware):
+ *   I1: upstream infrared bottle sensor; I2: second infrared bottle sensor.
+ *   Relay 2: conveyor circuit; Relay 4: bottle-stopper circuit.
+ *   Sensor signal convention in the current lab wiring: LOW = detected,
+ *   HIGH = clear. Physical actuator state is not directly measured here.
+ *
+ * Research / safety limitations:
+ *   - No application-level communication watchdog or autonomous safe-stop.
+ *   - No explicitly verified safe-start and restart sequence for actuator loads.
+ *   - No independent feedback confirming that a relay command moved a load.
+ *   - A connected OPC UA session is NOT a safety system.
+ *   - Isolate actuator power during offline tests or firmware changes.
+ *
+ * This annotated copy changes comments only; the preserved baseline source is
+ * tracked separately in Git history (commit 2b30e21).
+ */
 /**************************************************************************************
  * INCLUDE
  **************************************************************************************/
@@ -46,6 +73,10 @@ static int          const MODBUS_DEVICE_HUMIDITY_REGISTER    = 0x0002;
  * GLOBAL VARIABLES
  **************************************************************************************/
 
+/* The OPC UA service uses its own RTOS thread plus statically allocated stack
+ * and heap storage. Memory usage is significant on the OPTA and should be
+ * rechecked before adding control tasks or additional OPC UA variables.
+ */
 static size_t const OPC_UA_SERVER_THREAD_STACK_SIZE = 16*1024UL;
 template <size_t SIZE> struct alignas(uint32_t) OPC_UA_STACK final : public std::array<uint8_t, SIZE> {};
 static OPC_UA_STACK<OPC_UA_SERVER_THREAD_STACK_SIZE> OPC_UA_SERVER_THREAD_STACK;
@@ -74,6 +105,11 @@ REDIRECT_STDOUT_TO(Serial)
  * LOCAL FUNCTIONS
  **************************************************************************************/
 
+/* Return an estimated input-terminal voltage from the on-board ADC.
+ * The constant divider ratio compensates for the OPTA input circuitry.
+ * This helper is also used to classify physical digital input signals.
+ * It is not calibrated or filtered here for threshold/latency experiments.
+ */
 static float arduino_opta_analog_read(pin_size_t const pin)
 {
   static float const VOLTAGE_MAX = 3.3;      // Maximum voltage that can be read
@@ -88,6 +124,11 @@ static float arduino_opta_analog_read(pin_size_t const pin)
   return pin_voltage;
 }
 
+/* Classify an input as HIGH when its estimated voltage exceeds 5 V.
+ * Note that LOW/HIGH is the electrical result, not "safe/unsafe" or
+ * "motor off/on". For the wired infrared sensors, LOW means detected.
+ * There is no explicit software debounce or input-health diagnostic.
+ */
 static PinStatus arduino_opta_digital_read(pin_size_t const pin)
 {
   float const pin_voltage = arduino_opta_analog_read(pin);
@@ -102,6 +143,11 @@ static PinStatus arduino_opta_digital_read(pin_size_t const pin)
  * SETUP/LOOP
  **************************************************************************************/
 
+/* One-time initialization: serial diagnostics, static Ethernet, clock,
+ * OPTA expansion controller, OPC UA heap, and OPC UA server thread.
+ * Some initialization failures intentionally halt in infinite loops;
+ * there is no programmed retry/recovery policy in this sketch.
+ */
 void setup()
 {
   Serial.begin(115200);
@@ -121,6 +167,11 @@ void setup()
   /* Initialize Ethernet interface with a fixed IP.
    * PC Ethernet adapter: 192.168.0.10 / 255.255.255.0
    * Opta:               192.168.0.50 / 255.255.255.0
+   */
+  /* The private lab subnet is configured statically (not by DHCP).
+   * DNS/gateway are also set to 192.168.0.1; their reachability is not
+   * checked here. The OPC UA endpoint used by OpenFactory is
+   * opc.tcp://192.168.0.50:4840.
    */
   IPAddress ip(192, 168, 0, 50);
   IPAddress dns(192, 168, 0, 1);
@@ -143,6 +194,10 @@ void setup()
    * Opta's onboard RTC accordingly. The RTC is then used inside the
    * open62541 Arduino wrapper to obtain the correct timestamps for
    * the OPC UA server.
+   */
+  /* A failed NTP request falls back to the sketch compilation date.
+   * Neither path establishes clock accuracy suitable for precise
+   * distributed latency or jitter measurement without validation.
    */
   EthernetUDP udp_client;
   auto const epoch = opcua::NTPUtils::getTime(udp_client);
@@ -167,6 +222,10 @@ void setup()
   UA_callocSingleton  = o1heap_calloc;
   UA_reallocSingleton = o1heap_realloc;
 
+  /* Run the OPC UA server independently of the main Arduino loop.
+   * The server's remote-write callbacks directly drive relay pins.
+   * The separate thread does not itself provide application safety logic.
+   */
   opc_ua_server_thread.start(
     +[]()
     {
@@ -199,6 +258,10 @@ void setup()
         return;
       }
 
+      /* Publish all eight OPTA analog input channels as OPC UA values.
+       * This remains generic example functionality; our current lab
+       * station physically uses inputs I1 and I2 for bottle detection.
+       */
       /* Add the various digital input pins. */
       opta_opcua->addAnalogInput(opc_ua_server, "Analog Input I1", []() { return arduino_opta_analog_read(A0); });
       opta_opcua->addAnalogInput(opc_ua_server, "Analog Input I2", []() { return arduino_opta_analog_read(A1); });
@@ -209,6 +272,12 @@ void setup()
       opta_opcua->addAnalogInput(opc_ua_server, "Analog Input I7", []() { return arduino_opta_analog_read(A6); });
       opta_opcua->addAnalogInput(opc_ua_server, "Analog Input I8", []() { return arduino_opta_analog_read(A7); });
 
+      /* Publish digital classifications of the same eight input pins.
+       * I1 and I2 correspond to the wired active-low infrared sensors.
+       * These callbacks read signals only; they do not command a stop.
+       * The OpenFactory node identifiers are defined in the external
+       * src/opta_lab.yml configuration, not hardcoded by this sketch.
+       */
       /* Add the various digital input pins. */
       opta_opcua->addDigitalInput(opc_ua_server, "Digital Input I1", []() { return arduino_opta_digital_read(A0); });
       opta_opcua->addDigitalInput(opc_ua_server, "Digital Input I2", []() { return arduino_opta_digital_read(A1); });
@@ -219,6 +288,16 @@ void setup()
       opta_opcua->addDigitalInput(opc_ua_server, "Digital Input I7", []() { return arduino_opta_digital_read(A6); });
       opta_opcua->addDigitalInput(opc_ua_server, "Digital Input I8", []() { return arduino_opta_digital_read(A7); });
 
+      /* OPC UA write callbacks operate the physical relay output and its
+       * matching status LED. In this station, Relay 2 commands the conveyor
+       * circuit and Relay 4 commands the stopper circuit. Relays 1 and 3
+       * are also exposed as writable by the generic Arduino example.
+       *
+       * The callback applies the received Boolean immediately. It does not
+       * verify load movement, enforce sensor interlocks, time out an active
+       * command, or handle loss of the upstream OpenFactory connection.
+       * Local protective policies must be implemented and tested separately.
+       */
       /* Add the various relay outputs. */
       opta_opcua->addRelayOutput(opc_ua_server, "Relay 1", [](bool const value) { pinMode(RELAY1, OUTPUT); digitalWrite(RELAY1, value); pinMode(LED_D0, OUTPUT); digitalWrite(LED_D0, value); });
       opta_opcua->addRelayOutput(opc_ua_server, "Relay 2", [](bool const value) { pinMode(RELAY2, OUTPUT); digitalWrite(RELAY2, value); pinMode(LED_D1, OUTPUT); digitalWrite(LED_D1, value);});
@@ -230,6 +309,10 @@ void setup()
         opta_opcua->addLedOutput(opc_ua_server, "User LED", [](bool const value) { pinMode(LEDB, OUTPUT); digitalWrite(LEDB, value); });
       }
 
+      /* Generic library example support for optional expansion boards.
+       * These branches do not implement station sequence control; they
+       * expose additional I/O if modules are physically connected.
+       */
       /* Check availability of expansion modules. */
       uint8_t opta_expansion_num = OptaController.getExpansionNum();
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "OptaController %d expansion modules detected.", opta_expansion_num);
@@ -499,6 +582,11 @@ void setup()
       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Heap size: %lu / %lu bytes", heap_stats.current_size, heap_stats.reserved_size);
 #endif
 
+      /* Enter the OPC UA server's long-running event loop. The sketch
+       * contains no explicit Ethernet-link reinitialization or recovery
+       * policy for the failure mode observed after an Ethernet unplug.
+       * A successful TCP connection alone may not imply a healthy UA session.
+       */
       /* Run the server (until ctrl-c interrupt) */
       UA_StatusCode const status = UA_Server_runUntilInterrupt(opc_ua_server);
     });
@@ -506,6 +594,12 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
+/* Main Arduino loop: maintain optional expansion modules, blink the
+ * status LED, and periodically print the current IP address.
+ * There is no local bottle sequence, actuator timeout, or watchdog here.
+ * The 500 ms delay below limits iteration of THIS loop, while the OPC UA
+ * server runs on its separate RTOS thread.
+ */
 void loop()
 {
   /* Always call update as fast as possible */
