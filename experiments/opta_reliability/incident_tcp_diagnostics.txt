@@ -1,0 +1,23 @@
+===== UTC TIME =====
+2026-10-29T21:16:11Z
+===== TCP CONNECTION =====
+TCP result: 0 (0 means connected)
+===== GATEWAY LOGS =====
+[OPCUA-GATEWAY-1] (2026-10-29 21:11:00) WARNING [OPTA-LAB-001] Lost connection to OPC UA server (Connection is closed). Will automatically reconnect when the server becomes available.
+===== OPENFACTORY STATUS =====
+OPTA-LAB-001 - OpenFactory/OPTA-LAB-001                         
+ ────────────────────────────────────────────────────────────── 
+  ID                 Value             Type     Tag             
+ ────────────────────────────────────────────────────────────── 
+  avail              UNAVAILABLE       Events   Availability    
+ ────────────────────────────────────────────────────────────── 
+  digital_input_i1   false             Events   DigitalInputI1  
+ ────────────────────────────────────────────────────────────── 
+  digital_input_i2   true              Events   DigitalInputI2  
+ ────────────────────────────────────────────────────────────── 
+  gateway            OPCUA-GATEWAY-1   Events   OPCUA.Gateway   
+ ────────────────────────────────────────────────────────────── 
+  relay_2            false             Events   Relay2          
+ ────────────────────────────────────────────────────────────── 
+  relay_4            false             Events   Relay4          
+ ────────────────────────────────────────────────────────────── 
