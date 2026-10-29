@@ -1,8 +1,11 @@
+
 const state = {
   conveyorRunning: false,
   stopperEngaged: false,
   sensor1Detected: false,
   sensor2Detected: false,
+  realMode: false,
+  optaAvailable: false,
 };
 
 
@@ -37,13 +40,20 @@ const elements = {
 };
 
 
+// ==========================================================
+// API COMMUNICATION
+// ==========================================================
+
 async function request(url, options = {}) {
-  const response = await fetch(window.location.pathname.replace(/\/playground\/?$/, "") + url, {
-    method: options.method || "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(
+    window.location.pathname.replace(/\/playground\/?$/, "") + url,
+    {
+      method: options.method || "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
@@ -53,18 +63,117 @@ async function request(url, options = {}) {
 }
 
 
+// ==========================================================
+// EQUIPMENT AVAILABILITY AND UNKNOWN STATES
+// ==========================================================
+
+// The web API may remain available even when the physical
+// OPTA controller becomes disconnected.
+//
+// Previously received sensor and relay values must not be
+// presented as current hardware readings during an outage.
+//
+// This is a dashboard-level precaution, not a hardware
+// safety mechanism.
+
+function markHardwareUnknown() {
+  const ids = [
+    "sensor1SceneState",
+    "sensor2SceneState",
+    "sensor1Status",
+    "sensor2Status",
+    "conveyorSceneState",
+    "conveyorControlState",
+    "conveyorStatus",
+    "stopperControlState",
+    "stopperStatus",
+    "stopperSceneState",
+  ];
+
+  for (const id of ids) {
+    document.getElementById(id).textContent = "Unknown";
+  }
+
+  // Stop displaying inferred equipment activity.
+  // This does not operate or stop the physical hardware.
+  elements.conveyorVisual.classList.remove("is-running");
+  elements.stopperVisual.classList.remove("is-engaged");
+  elements.conveyorSceneDot.classList.remove("active");
+}
+
+
+// Prevent new activation requests when the API is offline,
+// or when the real OPTA is reported unavailable.
+//
+// Stop/release requests remain accessible, but must never
+// be mistaken for a guaranteed hardware emergency stop.
+
+function updateActivationControls(apiOnline) {
+  const canActivate =
+    apiOnline && (!state.realMode || state.optaAvailable);
+
+  elements.startConveyorButton.disabled = !canActivate;
+  elements.engageStopperButton.disabled = !canActivate;
+}
+
+
+// ==========================================================
+// APPLY STATE RECEIVED FROM THE BACKEND
+// ==========================================================
+
 function applyServerState(serverState) {
-  const availability = String(serverState.opta_availability ?? "UNKNOWN").trim().toUpperCase();
-  document.getElementById("optaAvailability").textContent = availability === "AVAILABLE" ? "Available" : availability === "UNAVAILABLE" ? "Unavailable" : "Unknown";
-  document.getElementById("optaHealthDot").style.background = availability === "AVAILABLE" ? "#10b981" : availability === "UNAVAILABLE" ? "#ef4444" : "#f59e0b";
+  const availability = String(
+    serverState.opta_availability ?? "UNKNOWN"
+  ).trim().toUpperCase();
+
+  // The real OpenFactory backend includes opta_availability.
+  // The simulator does not expose physical device availability.
+  state.realMode = Object.prototype.hasOwnProperty.call(
+    serverState,
+    "opta_availability"
+  );
+
+  state.optaAvailable = availability === "AVAILABLE";
+
+  document.getElementById("optaAvailability").textContent =
+    !state.realMode
+      ? "Simulation"
+      : availability === "AVAILABLE"
+        ? "Available"
+        : availability === "UNAVAILABLE"
+          ? "Unavailable"
+          : "Unknown";
+
+  document.getElementById("optaHealthDot").style.background =
+    !state.realMode
+      ? "#f59e0b"
+      : availability === "AVAILABLE"
+        ? "#10b981"
+        : availability === "UNAVAILABLE"
+          ? "#ef4444"
+          : "#f59e0b";
+
   state.conveyorRunning = serverState.conveyor_running;
   state.stopperEngaged = serverState.stopper_engaged;
   state.sensor1Detected = serverState.sensor1_detected;
   state.sensor2Detected = serverState.sensor2_detected;
 
   renderState();
+
+  // OpenFactory may retain previous attribute values after
+  // communication is lost. Hide them instead of suggesting
+  // that they represent current physical equipment state.
+  if (state.realMode && !state.optaAvailable) {
+    markHardwareUnknown();
+  }
+
+  updateActivationControls(true);
 }
 
+
+// ==========================================================
+// RENDER STATION STATE
+// ==========================================================
 
 function renderState() {
   const conveyorText = state.conveyorRunning
@@ -83,7 +192,6 @@ function renderState() {
     ? "Detected"
     : "Clear";
 
-
   elements.conveyorSceneState.textContent = conveyorText;
   elements.conveyorControlState.textContent = conveyorText;
   elements.conveyorStatus.textContent = conveyorText;
@@ -99,7 +207,6 @@ function renderState() {
 
   elements.sensor1Status.textContent = sensor1Text;
   elements.sensor2Status.textContent = sensor2Text;
-
 
   elements.conveyorVisual.classList.toggle(
     "is-running",
@@ -117,6 +224,10 @@ function renderState() {
   );
 }
 
+
+// ==========================================================
+// EVENT TIMELINE
+// ==========================================================
 
 function currentTime() {
   return new Date().toLocaleTimeString([], {
@@ -151,6 +262,10 @@ function addEvent(title, description) {
 }
 
 
+// ==========================================================
+// CONVEYOR COMMANDS
+// ==========================================================
+
 async function startConveyor() {
   try {
     const serverState = await request(
@@ -161,15 +276,15 @@ async function startConveyor() {
     applyServerState(serverState);
 
     addEvent(
-      "Conveyor started",
-      "Simulation command accepted."
+      "Conveyor start request completed",
+      "API responded; physical operation not independently verified."
     );
   } catch (error) {
     console.error(error);
 
     addEvent(
       "Conveyor command failed",
-      "Unable to start the simulated conveyor."
+      "Conveyor start request failed."
     );
   }
 }
@@ -185,19 +300,23 @@ async function stopConveyor() {
     applyServerState(serverState);
 
     addEvent(
-      "Conveyor stopped",
-      "Simulation command accepted."
+      "Conveyor stop request completed",
+      "API responded; physical operation not independently verified."
     );
   } catch (error) {
     console.error(error);
 
     addEvent(
       "Conveyor command failed",
-      "Unable to stop the simulated conveyor."
+      "Conveyor stop request failed."
     );
   }
 }
 
+
+// ==========================================================
+// STOPPER COMMANDS
+// ==========================================================
 
 async function engageStopper() {
   try {
@@ -209,15 +328,15 @@ async function engageStopper() {
     applyServerState(serverState);
 
     addEvent(
-      "Stopper engaged",
-      "Simulation command accepted."
+      "Stopper engage request completed",
+      "API responded; physical operation not independently verified."
     );
   } catch (error) {
     console.error(error);
 
     addEvent(
       "Stopper command failed",
-      "Unable to engage the simulated stopper."
+      "Stopper engage request failed."
     );
   }
 }
@@ -233,35 +352,62 @@ async function releaseStopper() {
     applyServerState(serverState);
 
     addEvent(
-      "Stopper released",
-      "Simulation command accepted."
+      "Stopper release request completed",
+      "API responded; physical operation not independently verified."
     );
   } catch (error) {
     console.error(error);
 
     addEvent(
       "Stopper command failed",
-      "Unable to release the simulated stopper."
+      "Stopper release request failed."
     );
   }
 }
 
 
+// ==========================================================
+// API HEALTH AND CONTROLLER AVAILABILITY
+// ==========================================================
+
 function updateApiStatus(online) {
-  const status = online ? "API Responding" : "API Unavailable";
-  document.getElementById("connectionLabel").textContent = status;
-  document.getElementById("appApiStatus").textContent = status;
-  document.getElementById("liveStatusLabel").textContent = online ? "Polling Active" : "Data Unavailable";
-  for (const id of ["connectionDot", "liveStatusDot"]) document.getElementById(id).style.background = online ? "#34d399" : "#ef4444";
-  elements.startConveyorButton.disabled = !online;
-  elements.engageStopperButton.disabled = !online;
+  const status = online
+    ? "API Responding"
+    : "API Unavailable";
+
+  document.getElementById("connectionLabel").textContent =
+    status;
+
+  document.getElementById("appApiStatus").textContent =
+    status;
+
+  document.getElementById("liveStatusLabel").textContent =
+    online ? "Polling Active" : "Data Unavailable";
+
+  for (const id of ["connectionDot", "liveStatusDot"]) {
+    document.getElementById(id).style.background =
+      online ? "#34d399" : "#ef4444";
+  }
+
+  updateActivationControls(online);
+
   if (!online) {
-    document.getElementById("optaAvailability").textContent = "Unknown";
-    document.getElementById("optaHealthDot").style.background = "#f59e0b";
-    for (const id of ["sensor1SceneState", "sensor2SceneState", "sensor1Status", "sensor2Status"]) document.getElementById(id).textContent = "Unavailable";
-    for (const id of ["conveyorSceneState", "conveyorControlState", "conveyorStatus", "stopperControlState", "stopperStatus", "stopperSceneState"]) document.getElementById(id).textContent = "Unknown";
+    document.getElementById("optaAvailability").textContent =
+      "Unknown";
+
+    document.getElementById("optaHealthDot").style.background =
+      "#f59e0b";
+
+    // The API is no longer supplying fresh readings.
+    // Do not continue displaying cached equipment states.
+    markHardwareUnknown();
   }
 }
+
+
+// ==========================================================
+// INITIAL STATE LOADING
+// ==========================================================
 
 async function loadInitialState() {
   try {
@@ -283,6 +429,10 @@ async function loadInitialState() {
 }
 
 
+// ==========================================================
+// USER INTERACTIONS
+// ==========================================================
+
 elements.startConveyorButton.addEventListener(
   "click",
   startConveyor
@@ -303,7 +453,6 @@ elements.releaseStopperButton.addEventListener(
   releaseStopper
 );
 
-
 elements.clearEventsButton.addEventListener(
   "click",
   () => {
@@ -312,13 +461,29 @@ elements.clearEventsButton.addEventListener(
 );
 
 
+// ==========================================================
+// LIVE STATE POLLING
+// ==========================================================
+
+// Prevent overlapping state-poll requests.
+// The polling interval is for dashboard updates,
+// not precise industrial timing measurements.
+
 let statePollInFlight = false;
 
 async function refreshLiveState() {
-  if (statePollInFlight) return;
+  if (statePollInFlight) {
+    return;
+  }
+
   statePollInFlight = true;
+
   try {
-    applyServerState(await request("/api/playground/state"));
+    const serverState = await request(
+      "/api/playground/state"
+    );
+
+    applyServerState(serverState);
     updateApiStatus(true);
   } catch (error) {
     console.error("Live state refresh failed:", error);
@@ -328,5 +493,18 @@ async function refreshLiveState() {
   }
 }
 
+
+// ==========================================================
+// APPLICATION STARTUP
+// ==========================================================
+
+// Disable activation buttons until the first successful
+// state response establishes controller availability.
+elements.startConveyorButton.disabled = true;
+elements.engageStopperButton.disabled = true;
+
 loadInitialState();
+
+// Refresh dashboard approximately every 500 milliseconds.
+// This does not provide real-time control guarantees.
 setInterval(refreshLiveState, 500);
