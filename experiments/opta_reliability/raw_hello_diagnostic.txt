@@ -1,0 +1,4 @@
+===== UTC TIME =====
+2026-10-29T22:16:01Z
+===== RAW OPC UA HELLO =====
+Response: b'' Hex:
