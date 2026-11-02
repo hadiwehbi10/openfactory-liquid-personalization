@@ -1,4 +1,10 @@
-"""Simulation backend for the liquid personalization station."""
+
+"""Simulate the factory station without using physical equipment.
+
+The simulator stores sensor, conveyor, and stopper states in memory.
+It allows us to develop and test the application without connecting
+to OpenFactory or the Arduino OPTA.
+"""
 
 from __future__ import annotations
 
@@ -8,19 +14,24 @@ from liquid_personalization_app.station.base import StationState
 
 
 class StationSimulator:
-    """Maintain the simulated state of the factory station."""
+    """Manage the simulated sensors, conveyor, and stopper."""
 
     def __init__(self) -> None:
+        """Initialize the station with all equipment inactive."""
+
+        # Prevent multiple requests from changing the state at the same time.
         self._lock = Lock()
 
+        # Both sensors start with no bottle detected.
         self.sensor1_detected = False
         self.sensor2_detected = False
 
+        # The conveyor and stopper start inactive.
         self.conveyor_running = False
         self.stopper_engaged = False
 
     def get_state(self) -> StationState:
-        """Return the current simulated station state."""
+        """Return a copy of the current simulated station state."""
 
         with self._lock:
             return {
@@ -31,7 +42,7 @@ class StationSimulator:
             }
 
     def start_conveyor(self) -> StationState:
-        """Start the simulated conveyor."""
+        """Set the simulated conveyor to running."""
 
         with self._lock:
             self.conveyor_running = True
@@ -39,7 +50,7 @@ class StationSimulator:
         return self.get_state()
 
     def stop_conveyor(self) -> StationState:
-        """Stop the simulated conveyor."""
+        """Set the simulated conveyor to stopped."""
 
         with self._lock:
             self.conveyor_running = False
@@ -47,7 +58,7 @@ class StationSimulator:
         return self.get_state()
 
     def engage_stopper(self) -> StationState:
-        """Engage the simulated bottle stopper."""
+        """Set the simulated stopper to engaged."""
 
         with self._lock:
             self.stopper_engaged = True
@@ -55,7 +66,7 @@ class StationSimulator:
         return self.get_state()
 
     def release_stopper(self) -> StationState:
-        """Release the simulated bottle stopper."""
+        """Set the simulated stopper to released."""
 
         with self._lock:
             self.stopper_engaged = False
