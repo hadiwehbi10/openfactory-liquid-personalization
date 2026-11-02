@@ -1,0 +1,8 @@
+===== UTC TIME =====
+2026-11-02T20:59:00Z
+===== OPTA OPC UA DIRECT READ =====
+OPC UA: CONNECTED
+Sensor I1: True
+Sensor I2: True
+Conveyor relay: False
+Stopper relay: False
