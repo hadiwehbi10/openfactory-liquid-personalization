@@ -1,0 +1,9 @@
+===== UTC TIMESTAMP =====
+2026-10-29T21:05:54Z
+===== OPC UA SESSION TEST =====
+OPC UA connection successful
+Sensor 1: True
+Sensor 2: True
+Relay 2: False
+Relay 4: False
+===== GATEWAY LOGS =====

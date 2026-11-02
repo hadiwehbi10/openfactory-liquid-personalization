@@ -1,0 +1,45 @@
+===== TIME =====
+2026-10-29T22:18:15Z
+===== GATEWAY TCP SOCKETS =====
+Matching connections: 0
+===== GATEWAY RECENT ERRORS =====
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 100, in _send_request
+    return await self._client._send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 615, in _send_request
+    return await self.protocol.send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 214, in send_request
+    await self.pre_request_hook()
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/client.py", line 851, in _wait_until_ready
+    raise ConnectionError(
+ConnectionError: Timed out waiting for client to reconnect (state=reconnecting)
+Task exception was never retrieved
+future: <Task finished name='Task-38' coro=<DeviceMonitor._subscribe_variables.<locals>.on_variable_update.<locals>._check_and_write() done, defined at /app/connectors/opcua/gateway/src/monitor.py:591> exception=ConnectionError('Timed out waiting for client to reconnect (state=reconnecting)')>
+Traceback (most recent call last):
+  File "/app/connectors/opcua/gateway/src/monitor.py", line 593, in _check_and_write
+    current_val = await node.read_value()
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/common/node.py", line 219, in read_value
+    result = await self.read_data_value()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/common/node.py", line 232, in read_data_value
+    return await self.read_attribute(ua.AttributeIds.Value, None, raise_on_bad_status)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/common/node.py", line 358, in read_attribute
+    result = await self.session.read(params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 232, in read
+    data = await self._send_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 100, in _send_request
+    return await self._client._send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 615, in _send_request
+    return await self.protocol.send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 214, in send_request
+    await self.pre_request_hook()
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/client.py", line 851, in _wait_until_ready
+    raise ConnectionError(
+ConnectionError: Timed out waiting for client to reconnect (state=reconnecting)

@@ -1,0 +1,113 @@
+TEST: virtual OPC UA server restart and subscription recovery
+ENDPOINT: opc.tcp://127.0.0.1:48401/virtual-test/ (container loopback only)
+No encrypting policy available, password may get transferred in plaintext
+Endpoints other than open requested but private key and certificate are not set.
+Requested session timeout to be 3600000ms, got 600000ms instead
+SUBSCRIPTION: monitored heartbeat variable
+DATA CHANGE: 0
+DATA CHANGE: 1
+BASELINE: subscription received heartbeat=1
+EVENT: stopping virtual OPC UA server
+Publish iteration crashed; retrying in 1s
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 454, in _publish_loop
+    response = await self.publish(pending_acks)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 439, in publish
+    data = await self._send_request(request, timeout=0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 100, in _send_request
+    return await self._client._send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 615, in _send_request
+    return await self.protocol.send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 223, in send_request
+    raise ConnectionError("Connection is closed") from None
+ConnectionError: Connection is closed
+CONNECTION LOST: transport lost
+Reconnect attempt failed: ConnectionRefusedError(111, "Connect call failed ('127.0.0.1', 48401)"); retrying in 1.0s
+Publish iteration crashed; retrying in 1s
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 454, in _publish_loop
+    response = await self.publish(pending_acks)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 439, in publish
+    data = await self._send_request(request, timeout=0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 100, in _send_request
+    return await self._client._send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 614, in _send_request
+    raise ConnectionError("Connection is not open")
+ConnectionError: Connection is not open
+Reconnect attempt failed: ConnectionRefusedError(111, "Connect call failed ('127.0.0.1', 48401)"); retrying in 1.0s
+Publish iteration crashed; retrying in 1s
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 454, in _publish_loop
+    response = await self.publish(pending_acks)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 439, in publish
+    data = await self._send_request(request, timeout=0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 100, in _send_request
+    return await self._client._send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 614, in _send_request
+    raise ConnectionError("Connection is not open")
+ConnectionError: Connection is not open
+Reconnect attempt failed: ConnectionRefusedError(111, "Connect call failed ('127.0.0.1', 48401)"); retrying in 1.0s
+LOSS CALLBACK OBSERVED: True
+EVENT: restarting virtual OPC UA server
+Publish iteration crashed; retrying in 1s
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 454, in _publish_loop
+    response = await self.publish(pending_acks)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 439, in publish
+    data = await self._send_request(request, timeout=0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 100, in _send_request
+    return await self._client._send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 614, in _send_request
+    raise ConnectionError("Connection is not open")
+ConnectionError: Connection is not open
+Reconnect attempt failed: ConnectionRefusedError(111, "Connect call failed ('127.0.0.1', 48401)"); retrying in 1.0s
+Publish iteration crashed; retrying in 1s
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 454, in _publish_loop
+    response = await self.publish(pending_acks)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 439, in publish
+    data = await self._send_request(request, timeout=0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 100, in _send_request
+    return await self._client._send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 614, in _send_request
+    raise ConnectionError("Connection is not open")
+ConnectionError: Connection is not open
+Reconnect attempt failed: ConnectionRefusedError(111, "Connect call failed ('127.0.0.1', 48401)"); retrying in 1.0s
+No encrypting policy available, password may get transferred in plaintext
+Endpoints other than open requested but private key and certificate are not set.
+Publish iteration crashed; retrying in 1s
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 454, in _publish_loop
+    response = await self.publish(pending_acks)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 439, in publish
+    data = await self._send_request(request, timeout=0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_session.py", line 100, in _send_request
+    return await self._client._send_request(request, timeout, message_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 614, in _send_request
+    raise ConnectionError("Connection is not open")
+ConnectionError: Connection is not open
+sending service fault response: The session id is not valid. (BadSessionIdInvalid)
+ServiceFault (BadSessionIdInvalid, diagnostics: DiagnosticInfo(SymbolicId=None, NamespaceURI=None, Locale=None, LocalizedText=None, AdditionalInfo=None, InnerStatusCode=None, InnerDiagnosticInfo=None)) from server received  in response to ActivateSessionRequest
+delete_subscriptions failed for 78: StatusCode(value=2150105088)
+DATA CHANGE: 100
+RESULT: PASS (subscription recovered in 0.50 s)
+NOTE: This tests a virtual server restart, not the OPTA's HEL/ACK failure.

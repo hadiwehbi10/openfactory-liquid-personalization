@@ -1,0 +1,56 @@
+===== TIME =====
+2026-10-29T21:14:25Z
+===== FRESH OPC UA SESSION =====
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/sync.py", line 115, in wrapper
+    result = self.tloop.post(aio_func(*args, **kwargs))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/sync.py", line 68, in post
+    return futur.result(self.timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/client.py", line 461, in connect
+    await self._connect_sequence()
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/client.py", line 475, in _connect_sequence
+    await self.send_hello()
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/client.py", line 661, in send_hello
+    await self.uaclient.send_hello(self.server_url.geturl(), self.max_messagesize, self.max_chunkcount)
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 589, in send_hello
+    return await self.protocol.send_hello(url, max_messagesize, max_chunkcount)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/client/ua_client.py", line 303, in send_hello
+    return await wait_for(ack, self.timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/asyncua/common/utils.py", line 145, in wait_for
+    return await asyncio.wait_for(aw, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/asyncio/tasks.py", line 520, in wait_for
+    return await fut
+           ^^^^^^^^^
+ConnectionError: connection lost
+Probe exit code: 124
+===== GATEWAY LOG HISTORY =====
+[OPCUA-GATEWAY-1] (2026-10-29 21:11:00) WARNING [OPTA-LAB-001] Lost connection to OPC UA server (Connection is closed). Will automatically reconnect when the server becomes available.
+===== CURRENT ASSET STATE =====
+OPTA-LAB-001 - OpenFactory/OPTA-LAB-001                         
+ ────────────────────────────────────────────────────────────── 
+  ID                 Value             Type     Tag             
+ ────────────────────────────────────────────────────────────── 
+  avail              UNAVAILABLE       Events   Availability    
+ ────────────────────────────────────────────────────────────── 
+  digital_input_i1   false             Events   DigitalInputI1  
+ ────────────────────────────────────────────────────────────── 
+  digital_input_i2   true              Events   DigitalInputI2  
+ ────────────────────────────────────────────────────────────── 
+  gateway            OPCUA-GATEWAY-1   Events   OPCUA.Gateway   
+ ────────────────────────────────────────────────────────────── 
+  relay_2            false             Events   Relay2          
+ ────────────────────────────────────────────────────────────── 
+  relay_4            false             Events   Relay4          
+ ────────────────────────────────────────────────────────────── 
+%3|1793308483.265|FAIL|rdkafka#producer-1| [thrd:broker:29092/bootstrap]: broker:29092/bootstrap: Failed to resolve 'broker:29092': Name or service not known (after 1249ms in state CONNECT)

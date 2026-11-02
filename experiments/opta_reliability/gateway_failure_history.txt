@@ -1,0 +1,19 @@
+===== GATEWAY INCIDENT HISTORY =====
+2026-10-29T21:11:00.395527935Z [OPCUA-GATEWAY-1] (2026-10-29 21:11:00) WARNING [OPTA-LAB-001] Lost connection to OPC UA server (Connection is closed). Will automatically reconnect when the server becomes available.
+2026-10-29T21:41:06.270015150Z Task exception was never retrieved
+2026-10-29T21:41:06.270065153Z future: <Task finished name='Task-35' coro=<DeviceMonitor._subscribe_variables.<locals>.on_variable_update.<locals>._check_and_write() done, defined at /app/connectors/opcua/gateway/src/monitor.py:591> exception=ConnectionError('Timed out waiting for client to reconnect (state=reconnecting)')>
+2026-10-29T21:41:06.270143508Z ConnectionError: Timed out waiting for client to reconnect (state=reconnecting)
+2026-10-29T22:01:35.708178784Z Task exception was never retrieved
+2026-10-29T22:01:35.708231578Z future: <Task finished name='Task-36' coro=<DeviceMonitor._subscribe_variables.<locals>.on_variable_update.<locals>._check_and_write() done, defined at /app/connectors/opcua/gateway/src/monitor.py:591> exception=ConnectionError('Timed out waiting for client to reconnect (state=reconnecting)')>
+2026-10-29T22:01:35.708299948Z ConnectionError: Timed out waiting for client to reconnect (state=reconnecting)
+2026-10-29T22:01:35.711239474Z Task exception was never retrieved
+2026-10-29T22:01:35.711264615Z future: <Task finished name='Task-37' coro=<DeviceMonitor._subscribe_variables.<locals>.on_variable_update.<locals>._check_and_write() done, defined at /app/connectors/opcua/gateway/src/monitor.py:591> exception=ConnectionError('Timed out waiting for client to reconnect (state=reconnecting)')>
+2026-10-29T22:01:35.711325467Z ConnectionError: Timed out waiting for client to reconnect (state=reconnecting)
+2026-10-29T22:01:35.711936007Z Task exception was never retrieved
+2026-10-29T22:01:35.711955023Z future: <Task finished name='Task-38' coro=<DeviceMonitor._subscribe_variables.<locals>.on_variable_update.<locals>._check_and_write() done, defined at /app/connectors/opcua/gateway/src/monitor.py:591> exception=ConnectionError('Timed out waiting for client to reconnect (state=reconnecting)')>
+2026-10-29T22:01:35.712031953Z ConnectionError: Timed out waiting for client to reconnect (state=reconnecting)
+===== GIT STATUS =====
+## fix/opta-reliability-baseline...origin/fix/opta-reliability-baseline
+?? experiments/opta_reliability/gateway_failure_history.txt
+?? experiments/opta_reliability/gateway_socket_snapshot.txt
+?? experiments/opta_reliability/raw_hello_diagnostic.txt
